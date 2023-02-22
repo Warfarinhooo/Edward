@@ -1,30 +1,107 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="pl-PL">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dodawanie tematów lekcji</title>
 </head>
 <body>
     <header>
-        <h1>Zakupy Pana Edwarda</h1>
+        Dodawanie tematów lekcji
     </header>
-    <main>
-        <p>Zakupy Pana Edwarda</p>
-        <p>Wybierz dzien tygodnia aby zobaczyc co kupuje Pan Edward</p>
-        <select>
-            <option value="Poniedzialek">Poniedzialek</option>
-            <option value="Wtorek">Wtorek</option>
-            <option value="Sroda">Sroda</option>
-            <option value="Czwartek">Czwartek</option>
-            <option value="Piatek">Piatek</option>
-            <option value="Sobota">Sobota</option>
-            <option value="Niedziela">Niedziela</option>
+    <section>
+    <?php
+            $polaczenie=mysqli_connect('localhost','root','','4tie');
+            if ($polaczenie) 
+               {
+                echo "Połączyliśmy się z bazą danych";
+                $zapytanie="SELECT * FROM nauczyciel";
+                $wynik=mysqli_query($polaczenie,$zapytanie);
+                while($wiersz=mysqli_fetch_array($wynik)){
+                    $imie[]= $wiersz['imie'];
+                    $nazwisko[]= $wiersz['nazwisko'];
+                    $iddane[]=$wiersz['id'];
+                }
+                $zapytanie="SELECT * FROM przedmiot";
+                $wynik=mysqli_query($polaczenie,$zapytanie);
+                while($wiersz=mysqli_fetch_array($wynik)){
+                    $przedmioty[]= $wiersz['przedmiot'];
+                    $idprzedmiot[]=$wiersz['ID'];
+                }
+                echo "<br>";
+                if($_SERVER["REQUEST_METHOD"]=="POST"){
+                    $idnauczyciel=$_POST['nauczyciel'];
+                    $idprzedmiot1=$_POST['idprzedmiot'];
+                    $data=$_POST['data'];
+                    $nrlekcji=$_POST['numerlekcji'];
+                    $temat=$_POST['temat'];
 
-        </select>
-    </main>
-<footer>Strone wykonal Fejbdzam</footer>
 
+                
+                        $insert="INSERT INTO lekcja VALUES(null,'$idnauczyciel','$idprzedmiot1','$data','$nrlekcji','$temat')";
+                        if(mysqli_query($polaczenie,$insert)){
+                            echo "Dodano do bazy";
+                        }
+                        else{
+                            echo "Bład";
+                        }
+                        $czyObecny=0;
+                    }                   
+
+               
+
+                }
+            
+            
+            mysqli_close($polaczenie);
+
+        ?>
+        <form method="POST">
+            <label for="nauczyciel">Wybierz nauczyciela</label>
+            <select name="nauczyciel" id="nauczyciel">
+            <?php
+                for ($x=0;$x<count($imie);$x++){
+                    echo "
+                    <option value=$iddane[$x] id='osoba$iddane[$x]' name='osoba$iddane[$x]'>
+                        $imie[$x] $nazwisko[$x]
+                        </option>
+                    ";
+                }
+                    
+            ?>
+            </select>
+            <br>
+            <label for="idprzedmiot">Wybierz przedmiot</label>
+            <select name="idprzedmiot">
+                <?php
+                for ($x=0;$x<count($przedmioty);$x++){
+                    echo "<option value=$idprzedmiot[$x]>$przedmioty[$x]</option>";
+                }
+                    
+                ?>
+            </select>
+            <br>
+            </select>
+            <label for="temat">Podaj Temat</label>
+            <input type ="text" name="temat" id="temat">
+            <br>
+            <label for="numer lekcji">wyberz numer lekcji</label>
+            <select name="numerlekcji" id="numerlekcji">
+                <?php
+                for($nrlekcji=0;$nrlekcji<=13;$nrlekcji++){
+                    echo "<option value=$nrlekcji>$nrlekcji</option>";                }
+                ?>
+                <br>
+                <label for="data"> podaj date</label>
+                <input type="date" name="data" id="data">
+                <br>            <input type="submit" value="Zapisz do bazy">
+            <output name="wynik"></output>
+        </form>
+
+    </section>
+    <footer>
+        Stronę wykonał Przemek
+    </footer>
 </body>
 </html>
